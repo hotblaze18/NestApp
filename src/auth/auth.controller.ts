@@ -4,14 +4,12 @@ import {
   Body,
   ValidationPipe,
   Get,
-  UseGuards,
+  Headers,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/authCredentials.dto';
 import { SignInCredentialsDto } from './dto/signIn-credentials.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { GetUser } from './decorators/get-user.decorator';
-import { User } from './user.entity';
+import { stringify } from 'querystring';
 
 @Controller('auth')
 export class AuthController {
@@ -32,9 +30,8 @@ export class AuthController {
   }
 
   @Get('/check')
-  @UseGuards(AuthGuard())
-  check(@GetUser() user: User): { username: string; email: string } {
-    const { username, email } = user;
-    return { username, email };
+  check(@Headers('authorization') authHeader: string) {
+    const accessToken = authHeader.split(' ')[1];
+    return this.authService.validateToken(accessToken);
   }
 }

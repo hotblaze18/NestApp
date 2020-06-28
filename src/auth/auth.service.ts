@@ -43,4 +43,9 @@ export class AuthService {
       accessToken: this.jwtService.sign(payload),
     };
   }
+
+  async validateToken(accessToken: string) {
+    const { username, email } = await this.jwtService.verifyAsync(accessToken);
+    return { username, email };
+  }
 }
